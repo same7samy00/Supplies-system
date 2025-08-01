@@ -1,73 +1,38 @@
 body {
-    font-family: 'Cairo', sans-serif;
-    background-color: #f4f7f6;
-    margin: 0;
-    color: #333;
+    overflow-x: hidden;
 }
-header {
-    background-color: #ffffff;
-    padding: 15px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
 }
-header h1 { margin: 0; font-size: 24px; color: #007bff; }
-#logoutBtn {
-    padding: 8px 16px; border: none; border-radius: 5px; background-color: #dc3545;
-    color: white; font-size: 14px; cursor: pointer; transition: background-color 0.3s;
+
+.main-content {
+    flex-grow: 1;
+    height: 100vh;
+    overflow-y: auto;
 }
-#logoutBtn:hover { background-color: #c82333; }
-main { padding: 30px; }
-section { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-#addProductForm {
-    display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+
+.nav-link.active {
+    background-color: #0d6efd !important;
 }
-#addProductForm input {
-    padding: 10px; border: 1px solid #ddd; border-radius: 5px; flex-grow: 1;
+
+.nav-link i {
+    font-size: 1.1rem;
 }
-#addProductForm button {
-    padding: 10px 20px; border: none; border-radius: 5px; background-color: #28a745;
-    color: white; cursor: pointer; transition: background-color 0.3s;
+
+.view {
+    display: none;
 }
-#addProductForm button:hover { background-color: #218838; }
-#searchInput {
-    width: 100%; padding: 10px; margin-bottom: 20px; box-sizing: border-box;
-    border: 1px solid #ccc; border-radius: 5px;
+
+.view.active {
+    display: block;
+    animation: fadeIn 0.5s;
 }
-#productsTable {
-    width: 100%; border-collapse: collapse; margin-top: 20px;
-}
-#productsTable th, #productsTable td {
-    padding: 12px; border: 1px solid #ddd; text-align: right;
-}
-#productsTable th { background-color: #f8f9fa; font-weight: bold; }
-#productsTable .action-btn {
-    padding: 5px 10px; border: none; border-radius: 4px; color: white;
-    cursor: pointer; margin: 0 2px;
-}
-.edit-btn { background-color: #007bff; }
-.delete-btn { background-color: #dc3545; }
-.print-btn { background-color: #17a2b8; }
-/* Alert Styles */
-tr.low-stock { background-color: #ffcdd2 !important; font-weight: bold; }
-tr.expiring-soon { background-color: #fff9c4 !important; }
-/* Modal Styles */
-.modal {
-    display: none; position: fixed; z-index: 1000; left: 0; top: 0;
-    width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);
-}
-.modal-content {
-    background-color: #fefefe; margin: 10% auto; padding: 30px; border: 1px solid #888;
-    width: 80%; max-width: 500px; border-radius: 10px; position: relative;
-}
-.modal-content label { display: block; margin-top: 10px; font-weight: bold; }
-.modal-content input { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
-.modal-content button {
-    width: 100%; margin-top: 20px; padding: 12px; background-color: #28a745;
-    color: white; border: none; border-radius: 5px; cursor: pointer;
-}
-.close-btn {
-    color: #aaa; position: absolute; left: 20px; top: 10px;
-    font-size: 28px; font-weight: bold; cursor: pointer;
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
