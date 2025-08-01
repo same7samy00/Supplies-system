@@ -14,7 +14,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// --- Auth Guard ---
+// --- Auth Guard & Main Initializer ---
 auth.onAuthStateChanged(user => {
     if (user) {
         initializeApp(user);
@@ -23,18 +23,68 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-// --- Logout ---
-document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
-
-// --- Main App Function ---
 function initializeApp(user) {
     // --- DOM Elements ---
     const addProductForm = document.getElementById('addProductForm');
     const productsTableBody = document.getElementById('productsTableBody');
-    const editModal = document.getElementById('editModal');
+    const editModalEl = document.getElementById('editModal');
+    const editModal = new bootstrap.Modal(editModalEl);
     const editProductForm = document.getElementById('editProductForm');
-    const closeBtn = document.querySelector('.close-btn');
     const searchInput = document.getElementById('searchInput');
+    const settingsForm = document.getElementById('settingsForm');
+    const storeNameHeader = document.getElementById('storeNameHeader');
+    const storeNameInput = document.getElementById('storeNameInput');
+    const navLinks = document.querySelectorAll('.nav-link[data-view]');
+    const views = document.querySelectorAll('.view');
+    const dateTimeEl = document.getElementById('dateTime');
+
+    // --- Initial Setup ---
+    document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
+    searchInput.focus(); // Focus search input for barcode scanner
+    
+    // Live Clock
+    setInterval(() => {
+        dateTimeEl.textContent = new Date().toLocaleString('ar-EG');
+    }, 1000);
+
+    // --- Settings ---
+    const settingsRef = db.collection('settings').doc('storeInfo');
+    settingsRef.get().then(doc => {
+        if(doc.exists) {
+            const storeName = doc.data().name;
+            storeNameHeader.textContent = storeName;
+            storeNameInput.value = storeName;
+        } else {
+            storeNameHeader.textContent = "اسم المحل الافتراضي";
+        }
+    });
+
+    settingsForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newName = storeNameInput.value;
+        settingsRef.set({ name: newName }).then(() => {
+            storeNameHeader.textContent = newName;
+            alert('تم حفظ الإعدادات بنجاح!');
+        });
+    });
+
+    // --- View Navigation ---
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetView = document.getElementById(link.dataset.view);
+
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            
+            views.forEach(v => v.classList.remove('active'));
+            targetView.classList.add('active');
+
+            if (link.dataset.view === 'inventoryView') {
+                searchInput.focus(); // Re-focus search when switching to inventory
+            }
+        });
+    });
 
     // --- CREATE ---
     addProductForm.addEventListener('submit', (e) => {
@@ -53,50 +103,60 @@ function initializeApp(user) {
 
     // --- READ & RENDER ---
     db.collection('products').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+        let productsData = [];
+        snapshot.forEach(doc => productsData.push({ id: doc.id, ...doc.data() }));
+        renderTable(productsData);
+        // We need to re-apply search after every render
+        applySearchFilter(searchInput.value); 
+    });
+
+    function renderTable(products) {
         productsTableBody.innerHTML = '';
-        snapshot.forEach(doc => {
-            const product = doc.data();
+        products.forEach(product => {
             const tr = document.createElement('tr');
-            tr.setAttribute('data-id', doc.id);
+            tr.setAttribute('data-id', product.id);
 
             // Alerts Logic
             const now = new Date(); now.setHours(0,0,0,0);
             const expiry = new Date(product.expiryDate); expiry.setHours(0,0,0,0);
             const daysUntilExpiry = (expiry - now) / (1000 * 60 * 60 * 24);
-            if (product.quantity <= product.lowStockThreshold) tr.classList.add('low-stock');
-            else if (product.expiryDate && daysUntilExpiry <= 30) tr.classList.add('expiring-soon');
+            if (product.quantity <= product.lowStockThreshold) tr.classList.add('table-danger');
+            else if (product.expiryDate && daysUntilExpiry <= 30) tr.classList.add('table-warning');
 
             tr.innerHTML = `
                 <td>${product.name}</td>
                 <td>${product.quantity}</td>
                 <td>${product.unit}</td>
                 <td>${product.price.toFixed(2)}</td>
-                <td>${product.expiryDate ? new Date(product.expiryDate).toLocaleDateString() : '-'}</td>
+                <td>${product.expiryDate ? new Date(product.expiryDate).toLocaleDateString('ar-EG') : '-'}</td>
                 <td>${product.barcode || '-'}</td>
                 <td>
-                    <button class="action-btn edit-btn" data-id="${doc.id}">تعديل</button>
-                    <button class="action-btn delete-btn" data-id="${doc.id}">حذف</button>
-                    <button class="action-btn print-btn" data-barcode="${product.barcode}" data-name="${product.name}">طباعة</button>
+                    <button class="btn btn-sm btn-info print-btn" title="طباعة باركود" data-barcode="${product.barcode}" data-name="${product.name}"><i class="bi bi-printer-fill"></i></button>
+                    <button class="btn btn-sm btn-primary edit-btn" title="تعديل"><i class="bi bi-pencil-square"></i></button>
+                    <button class="btn btn-sm btn-danger delete-btn" title="حذف"><i class="bi bi-trash3-fill"></i></button>
                 </td>
             `;
             productsTableBody.appendChild(tr);
         });
-    });
+    }
     
     // --- UPDATE & DELETE & PRINT (Event Delegation) ---
     productsTableBody.addEventListener('click', (e) => {
-        const target = e.target;
-        const id = target.dataset.id;
+        const btn = e.target.closest('button');
+        if (!btn) return;
+
+        const row = btn.closest('tr');
+        const id = row.dataset.id;
         
         // DELETE
-        if (target.classList.contains('delete-btn')) {
+        if (btn.classList.contains('delete-btn')) {
             if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
                 db.collection('products').doc(id).delete();
             }
         }
         
         // UPDATE (Open Modal)
-        if (target.classList.contains('edit-btn')) {
+        if (btn.classList.contains('edit-btn')) {
             db.collection('products').doc(id).get().then(doc => {
                 if (doc.exists) {
                     const p = doc.data();
@@ -108,15 +168,15 @@ function initializeApp(user) {
                     document.getElementById('editProductBarcode').value = p.barcode || '';
                     document.getElementById('editProductExpiryDate').value = p.expiryDate || '';
                     document.getElementById('editLowStockThreshold').value = p.lowStockThreshold;
-                    editModal.style.display = 'block';
+                    editModal.show();
                 }
             });
         }
 
         // PRINT
-        if (target.classList.contains('print-btn')) {
-            const barcodeValue = target.dataset.barcode;
-            const productName = target.dataset.name;
+        if (btn.classList.contains('print-btn')) {
+            const barcodeValue = btn.dataset.barcode;
+            const productName = btn.dataset.name;
             if (barcodeValue) {
                 printBarcode(barcodeValue, productName);
             } else {
@@ -137,24 +197,28 @@ function initializeApp(user) {
             barcode: document.getElementById('editProductBarcode').value,
             expiryDate: document.getElementById('editProductExpiryDate').value,
             lowStockThreshold: parseInt(document.getElementById('editLowStockThreshold').value),
-        }).then(() => editModal.style.display = 'none');
+        }).then(() => editModal.hide());
     });
 
-    // --- SEARCH ---
+    // --- SEARCH (Fixed) ---
     searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
+        applySearchFilter(e.target.value);
+    });
+
+    function applySearchFilter(searchTerm) {
+        const term = searchTerm.toLowerCase();
         productsTableBody.querySelectorAll('tr').forEach(row => {
             const name = row.cells[0].textContent.toLowerCase();
             const barcode = row.cells[5].textContent.toLowerCase();
-            row.style.display = (name.includes(searchTerm) || barcode.includes(searchTerm)) ? '' : 'none';
+            row.style.display = (name.includes(term) || barcode.includes(term)) ? '' : 'none';
         });
-    });
+    }
 
     // --- Utility Functions ---
     function printBarcode(barcodeValue, productName) {
         const printWindow = window.open('', 'PRINT', 'height=400,width=600');
         printWindow.document.write('<html><head><title>Barcode</title>');
-        printWindow.document.write('<style>body{text-align:center; margin-top: 20px;} svg{width: 80%;}</style></head><body>');
+        printWindow.document.write('<style>body{text-align:center; margin-top: 20px; font-family: sans-serif;} svg{width: 80%;}</style></head><body>');
         printWindow.document.write(`<h4>${productName}</h4>`);
         printWindow.document.write('<svg id="barcode"></svg>');
         printWindow.document.write('</body></html>');
@@ -164,13 +228,9 @@ function initializeApp(user) {
             displayValue: true
         });
         printWindow.focus();
-        printWindow.print();
-        printWindow.close();
+        setTimeout(() => { // Timeout to ensure rendering before print
+            printWindow.print();
+            printWindow.close();
+        }, 250);
     }
-    
-    // --- Modal Closing Logic ---
-    closeBtn.addEventListener('click', () => editModal.style.display = 'none');
-    window.addEventListener('click', (e) => {
-        if (e.target == editModal) editModal.style.display = 'none';
-    });
 }
