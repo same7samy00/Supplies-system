@@ -47,8 +47,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // --- Initial Setup ---
         document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
-        if(searchInput) searchInput.focus();
-        if(dateTimeEl) setInterval(() => { dateTimeEl.textContent = new Date().toLocaleString('ar-EG'); }, 1000);
+        if (searchInput) searchInput.focus();
+        if (dateTimeEl) setInterval(() => { dateTimeEl.textContent = new Date().toLocaleString('ar-EG'); }, 1000);
 
         // --- Remote Scanner Logic ---
         connectScannerBtn.addEventListener('click', () => {
@@ -106,6 +106,25 @@ window.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // --- All other app logic (CRUD, Search, Print)
+        // --- ✅ Fetch Products from Firestore ---
+        db.collection("products").onSnapshot(snapshot => {
+            productsTableBody.innerHTML = ''; // مسح البيانات القديمة
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${data.barcode || ''}</td>
+                    <td>${data.name || ''}</td>
+                    <td>${data.quantity || 0}</td>
+                    <td>${data.unit || ''}</td>
+                    <td>${data.price || 0}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning edit-btn" data-id="${doc.id}">تعديل</button>
+                        <button class="btn btn-sm btn-danger delete-btn" data-id="${doc.id}">حذف</button>
+                    </td>
+                `;
+                productsTableBody.appendChild(row);
+            });
+        });
     }
 });
