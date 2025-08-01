@@ -10,10 +10,10 @@
 </head>
 <body>
     <div class="d-flex">
-        <div class="sidebar d-flex flex-column flex-shrink-0 p-3 bg-light">
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3 bg-white shadow-sm">
             <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
                 <i class="bi bi-box-seam fs-4 me-2"></i>
-                <span class="fs-4">المخزون</span>
+                <span class="fs-4 fw-bold">المخزون</span>
             </a>
             <hr>
             <ul class="nav nav-pills flex-column mb-auto">
@@ -29,34 +29,73 @@
                 </li>
             </ul>
             <hr>
-            <button id="logoutBtn" class="btn btn-danger"><i class="bi bi-box-arrow-right me-2"></i> تسجيل الخروج</button>
+            <button id="logoutBtn" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right me-2"></i> تسجيل الخروج</button>
         </div>
 
         <div class="main-content p-4">
             <header class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0" id="storeNameHeader">اسم المحل</h1>
+                <h1 class="h3 mb-0 fw-bold" id="storeNameHeader">اسم المحل</h1>
                 <div class="d-none d-md-block" id="dateTime"></div>
             </header>
 
             <div id="inventoryView" class="view active">
                 <div class="card shadow-sm mb-4">
-                    <div class="card-header"><h3><i class="bi bi-plus-circle-fill me-2"></i> إضافة منتج جديد</h3></div>
+                    <div class="card-header bg-white py-3">
+                        <h3 class="mb-0 fw-bold"><i class="bi bi-plus-circle-fill me-2"></i> إضافة منتج جديد</h3>
+                    </div>
                     <div class="card-body">
                         <form id="addProductForm" class="row g-3 align-items-end">
-                             <div class="col-md-4"><label class="form-label">اسم المنتج</label><input type="text" id="productName" class="form-control" required></div>
-                            <div class="col-md-2"><label class="form-label">الكمية</label><input type="number" id="productQuantity" class="form-control" required></div>
-                            <div class="col-md-3"><label class="form-label">الوحدة</label><select id="productUnit" class="form-select" required><option selected disabled value="">اختر...</option><option value="قطعة">قطعة</option><option value="كرتونة">كرتونة</option><option value="علبة">علبة</option><option value="كيلو">كيلو</option></select></div>
-                            <div class="col-md-3"><label class="form-label">السعر</label><input type="number" id="productPrice" class="form-control" step="0.01" required></div>
-                            <div class="col-md-3"><label class="form-label">الباركود</label><input type="text" id="productBarcode" class="form-control"></div>
-                            <div class="col-md-3"><label class="form-label">تاريخ الانتهاء</label><input type="date" id="productExpiryDate" class="form-control"></div>
-                            <div class="col-md-3"><label class="form-label">تنبيه عند كمية</label><input type="number" id="lowStockThreshold" class="form-control" required></div>
-                            <div class="col-md-3"><button type="submit" class="btn btn-primary w-100"><i class="bi bi-plus-lg"></i> إضافة</button></div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">اسم المنتج</label>
+                                <input type="text" id="productName" class="form-control" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold">الكمية</label>
+                                <input type="number" id="productQuantity" class="form-control" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">الوحدة</label>
+                                <select id="productUnit" class="form-select" required>
+                                    <option selected disabled value="">اختر...</option>
+                                    <option value="قطعة">قطعة</option>
+                                    <option value="كرتونة">كرتونة</option>
+                                    <option value="علبة">علبة</option>
+                                    <option value="كيلو">كيلو</option>
+                                    <option value="متر">متر</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">السعر</label>
+                                <input type="number" id="productPrice" class="form-control" step="0.01" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">الباركود</label>
+                                <div class="input-group">
+                                    <input type="text" id="productBarcode" class="form-control">
+                                    <button class="btn btn-outline-secondary" type="button" id="generateBarcodeBtn" title="توليد باركود تلقائي">
+                                        <i class="bi bi-magic"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">تاريخ الانتهاء</label>
+                                <input type="date" id="productExpiryDate" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">تنبيه عند كمية</label>
+                                <input type="number" id="lowStockThreshold" class="form-control" required>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary w-100 fw-bold"><i class="bi bi-plus-lg me-2"></i> إضافة</button>
+                            </div>
                         </form>
                     </div>
                 </div>
 
                 <div class="card shadow-sm">
-                    <div class="card-header"><h3><i class="bi bi-search me-2"></i> بحث / المنتجات الحالية</h3></div>
+                    <div class="card-header bg-white py-3">
+                        <h3 class="mb-0 fw-bold"><i class="bi bi-search me-2"></i> بحث / المنتجات الحالية</h3>
+                    </div>
                     <div class="card-body">
                         <div class="input-group mb-3">
                             <input type="text" id="searchInput" class="form-control" placeholder="امسح بالـ USB أو ابحث بالاسم هنا...">
@@ -67,7 +106,15 @@
                         <div class="table-responsive">
                             <table class="table table-striped table-hover align-middle">
                                 <thead class="table-light">
-                                    <tr><th>المنتج</th><th>الكمية</th><th>الوحدة</th><th>السعر</th><th>تاريخ الانتهاء</th><th>الباركود</th><th>إجراءات</th></tr>
+                                    <tr>
+                                        <th>المنتج</th>
+                                        <th>الكمية</th>
+                                        <th>الوحدة</th>
+                                        <th>السعر</th>
+                                        <th>تاريخ الانتهاء</th>
+                                        <th>الباركود</th>
+                                        <th>إجراءات</th>
+                                    </tr>
                                 </thead>
                                 <tbody id="productsTableBody"></tbody>
                             </table>
@@ -77,15 +124,17 @@
             </div>
 
             <div id="settingsView" class="view">
-                 <div class="card shadow-sm">
-                    <div class="card-header"><h3><i class="bi bi-sliders me-2"></i> إعدادات النظام</h3></div>
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h3 class="mb-0 fw-bold"><i class="bi bi-sliders me-2"></i> إعدادات النظام</h3>
+                    </div>
                     <div class="card-body">
                         <form id="settingsForm">
                             <div class="mb-3">
-                                <label for="storeNameInput" class="form-label">اسم المحل</label>
+                                <label for="storeNameInput" class="form-label fw-bold">اسم المحل</label>
                                 <input type="text" id="storeNameInput" class="form-control" placeholder="اكتب اسم محلك التجاري هنا">
                             </div>
-                            <button type="submit" class="btn btn-success"><i class="bi bi-check-circle-fill me-2"></i> حفظ الإعدادات</button>
+                            <button type="submit" class="btn btn-success w-100 fw-bold"><i class="bi bi-check-circle-fill me-2"></i> حفظ الإعدادات</button>
                         </form>
                     </div>
                 </div>
@@ -94,28 +143,55 @@
     </div>
 
     <div class="modal fade" id="editModal" tabindex="-1">
-         <div class="modal-dialog">
+        <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i> تعديل المنتج</h5>
+                <div class="modal-header bg-light py-3">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i> تعديل المنتج</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="editProductForm">
-                        <div class="mb-2"><label class="form-label">اسم المنتج</label><input type="text" id="editProductName" class="form-control" required></div>
-                        <div class="mb-2"><label class="form-label">الكمية</label><input type="number" id="editProductQuantity" class="form-control" required></div>
-                        <div class="mb-2"><label class="form-label">الوحدة</label><select id="editProductUnit" class="form-select" required><option value="قطعة">قطعة</option><option value="كرتونة">كرتونة</option><option value="علبة">علبة</option><option value="كيلو">كيلو</option></select></div>
-                        <div class="mb-2"><label class="form-label">السعر</label><input type="number" id="editProductPrice" class="form-control" step="0.01" required></div>
-                        <div class="mb-2"><label class="form-label">الباركود</label><input type="text" id="editProductBarcode" class="form-control"></div>
-                        <div class="mb-2"><label class="form-label">تاريخ الانتهاء</label><input type="date" id="editProductExpiryDate" class="form-control"></div>
-                        <div class="mb-2"><label class="form-label">تنبيه عند كمية</label><input type="number" id="editLowStockThreshold" class="form-control" required></div>
-                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-check-lg"></i> حفظ التعديلات</button>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">اسم المنتج</label>
+                            <input type="text" id="editProductName" class="form-control" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">الكمية</label>
+                            <input type="number" id="editProductQuantity" class="form-control" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">الوحدة</label>
+                            <select id="editProductUnit" class="form-select" required>
+                                <option value="قطعة">قطعة</option>
+                                <option value="كرتونة">كرتونة</option>
+                                <option value="علبة">علبة</option>
+                                <option value="كيلو">كيلو</option>
+                                <option value="متر">متر</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">السعر</label>
+                            <input type="number" id="editProductPrice" class="form-control" step="0.01" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">الباركود</label>
+                            <input type="text" id="editProductBarcode" class="form-control">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">تاريخ الانتهاء</label>
+                            <input type="date" id="editProductExpiryDate" class="form-control">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">تنبيه عند كمية</label>
+                            <input type="number" id="editLowStockThreshold" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold"><i class="bi bi-check-lg me-2"></i> حفظ التعديلات</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth-compat.js"></script>
