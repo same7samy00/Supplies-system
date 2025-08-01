@@ -5,55 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مسح باركود</title>
     <style>
-        body { margin: 0; font-family: sans-serif; background-color: #000; color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; }
-        video { width: 100%; max-width: 640px; border: 2px solid #333; }
-        #status { margin-top: 1rem; font-size: 1.2rem; }
+        body { margin: 0; font-family: sans-serif; background-color: #f8f9fa; color: #333; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; }
+        video { width: 100%; max-width: 640px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 5px; }
+        #status { margin-top: 1rem; font-size: 1rem; color: #555; }
         #cancelBtn { position: absolute; top: 20px; left: 20px; padding: 10px 15px; font-size: 1rem; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
     <video id="video"></video>
-    <p id="status">وجه الكاميرا نحو الباركود...</p>
-    <button id="cancelBtn">إلغاء</button>
-    
+    <p id="status">جارٍ تهيئة الكاميرا...</p>
+    <button id="cancelBtn" class="btn btn-danger">إلغاء</button>
+
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@zxing/library@latest/umd/zxing.min.js"></script>
     <script type="text/javascript">
         window.addEventListener('load', () => {
             const codeReader = new ZXing.BrowserMultiFormatReader();
             const statusEl = document.getElementById('status');
             const cancelBtn = document.getElementById('cancelBtn');
+            let selectedDeviceId;
 
             cancelBtn.addEventListener('click', () => window.close());
 
             codeReader.listVideoInputDevices()
                 .then(videoInputDevices => {
-                    // Use the back camera on mobile devices
-                    const firstDeviceId = videoInputDevices[0].deviceId;
-                    let selectedDeviceId = firstDeviceId;
                     const rearCamera = videoInputDevices.find(device => /back|rear|environment/i.test(device.label));
-                    if (rearCamera) {
-                        selectedDeviceId = rearCamera.deviceId;
-                    }
-
-                    codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-                        if (result) {
-                            statusEl.textContent = 'تم العثور على الباركود!';
-                            // Save the result to localStorage so the main page can detect it
-                            localStorage.setItem('scannedBarcode', result.getText());
-                            // Close the scanner window
-                            window.close();
-                        }
-                        if (err && !(err instanceof ZXing.NotFoundException)) {
-                            console.error(err);
-                            statusEl.textContent = `خطأ: ${err}`;
-                        }
-                    });
-                })
-                .catch(err => {
-                    console.error(err);
-                    statusEl.textContent = "لا يمكن الوصول إلى الكاميرا.";
-                });
-        });
-    </script>
-</body>
-</html>
+                    selectedDeviceId = rearCamera ? rearCamera.deviceId : videoInputDevices
