@@ -1,9 +1,9 @@
-// استخدم نفس بيانات الإعداد التي أرسلتها
+// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBU4lTFTliRRmn4eN9F9pP9SKQJilUsXlE",
     authDomain: "supplies-system.firebaseapp.com",
     projectId: "supplies-system",
-    storageBucket: "supplies-system.appspot.com", // Corrected domain
+    storageBucket: "supplies-system.appspot.com",
     messagingSenderId: "205884975863",
     appId: "1:205884975863:web:de65d32c2459f9979ac1f2",
     measurementId: "G-2KSYJRKSCX"
@@ -11,41 +11,36 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const auth = firebase.auth(); // Initialize Firebase Authentication
 
-// --- Login Logic ---
+// --- Login Logic using Firebase Auth ---
 const loginForm = document.getElementById('loginForm');
 
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault(); // منع الفورم من إعادة تحميل الصفحة
+loginForm.addEventListener('submit', (e) => {
+    e.preventDefault(); // Prevent the form from reloading the page
 
-    const enteredPassword = document.getElementById('password').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-    try {
-        // جلب كلمة المرور من قاعدة البيانات
-        // سنفترض أن كلمة المرور مخزنة في collection اسمها 'settings' وفي document اسمه 'auth'
-        const docRef = db.collection('settings').doc('auth');
-        const doc = await docRef.get();
-
-        if (doc.exists) {
-            const correctPassword = doc.data().password; // افترضنا أن الحقل اسمه password
-            if (enteredPassword === correctPassword) {
-                alert('تم تسجيل الدخول بنجاح!');
-                // توجيه المستخدم إلى الصفحة الرئيسية بعد تسجيل الدخول
-                // سننشئ هذه الصفحة لاحقًا
-                window.location.href = 'dashboard.html'; 
+    // Use the built-in Firebase function to sign in
+    auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            // Signed in successfully
+            alert('تم تسجيل الدخول بنجاح!');
+            
+            // Redirect the user to the main dashboard page
+            // We will create this page in the next step
+            window.location.href = 'dashboard.html';
+        })
+        .catch((error) => {
+            // Handle login errors
+            // Provide user-friendly error messages
+            if (error.code === 'auth/user-not-found') {
+                alert('هذا البريد الإلكتروني غير مسجل.');
+            } else if (error.code === 'auth/wrong-password') {
+                alert('كلمة المرور غير صحيحة.');
             } else {
-                alert('كلمة المرور غير صحيحة!');
+                alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
             }
-        } else {
-            // هذا يحدث لو لم يتم تعيين كلمة مرور بعد
-            alert('خطأ: لم يتم العثور على إعدادات كلمة المرور. يرجى مراجعة المسؤول.');
-            // يمكنك تعيين كلمة مرور افتراضية هنا لأول مرة
-            // مثال: await db.collection('settings').doc('auth').set({ password: 'admin' });
-        }
-
-    } catch (error) {
-        console.error("خطأ في الاتصال بقاعدة البيانات: ", error);
-        alert('حدث خطأ أثناء محاولة تسجيل الدخول.');
-    }
+        });
 });
