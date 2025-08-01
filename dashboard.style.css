@@ -1,0 +1,47 @@
+body {
+    font-family: 'Cairo', sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    color: #333;
+}
+
+header {
+    background-color: #ffffff;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #007bff;
+}
+
+#logoutBtn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #dc3545;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#logoutBtn:hover {
+    background-color: #c82333;
+}
+
+main {
+    padding: 30px;
+}
+
+section {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
