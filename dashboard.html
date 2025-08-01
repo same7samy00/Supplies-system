@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة التحكم - نظام الإدارة</title>
     <link rel="stylesheet" href="dashboard.style.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 </head>
 <body>
     <header>
@@ -18,24 +19,29 @@
             <form id="addProductForm">
                 <input type="text" id="productName" placeholder="اسم المنتج" required>
                 <input type="number" id="productQuantity" placeholder="الكمية" required>
+                <input type="text" id="productUnit" placeholder="الوحدة (قطعة/كرتونة..)" required>
                 <input type="number" id="productPrice" placeholder="السعر" step="0.01" required>
                 <input type="text" id="productBarcode" placeholder="الباركود (اختياري)">
+                <input type="date" id="productExpiryDate" title="تاريخ الانتهاء">
+                <input type="number" id="lowStockThreshold" placeholder="تنبيه عند كمية" required>
                 <button type="submit">إضافة للمخزون</button>
             </form>
             <hr>
+            <input type="text" id="searchInput" placeholder="🔍 ابحث بالاسم أو الباركود...">
             <h3>المنتجات في المخزون</h3>
             <table id="productsTable">
                 <thead>
                     <tr>
                         <th>اسم المنتج</th>
                         <th>الكمية</th>
+                        <th>الوحدة</th>
                         <th>السعر</th>
+                        <th>تاريخ الانتهاء</th>
                         <th>الباركود</th>
                         <th>إجراءات</th>
                     </tr>
                 </thead>
-                <tbody id="productsTableBody">
-                    </tbody>
+                <tbody id="productsTableBody"></tbody>
             </table>
         </section>
     </main>
@@ -45,14 +51,20 @@
             <span class="close-btn">&times;</span>
             <h2>تعديل المنتج</h2>
             <form id="editProductForm">
-                <label for="editProductName">اسم المنتج:</label>
+                <label>اسم المنتج:</label>
                 <input type="text" id="editProductName" required>
-                <label for="editProductQuantity">الكمية:</label>
+                <label>الكمية:</label>
                 <input type="number" id="editProductQuantity" required>
-                <label for="editProductPrice">السعر:</label>
+                 <label>الوحدة:</label>
+                <input type="text" id="editProductUnit" required>
+                <label>السعر:</label>
                 <input type="number" id="editProductPrice" step="0.01" required>
-                <label for="editProductBarcode">الباركود:</label>
+                <label>الباركود:</label>
                 <input type="text" id="editProductBarcode">
+                <label>تاريخ الانتهاء:</label>
+                <input type="date" id="editProductExpiryDate">
+                <label>تنبيه عند كمية:</label>
+                <input type="number" id="editLowStockThreshold" required>
                 <button type="submit">حفظ التعديلات</button>
             </form>
         </div>
