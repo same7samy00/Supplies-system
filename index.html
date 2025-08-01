@@ -11,6 +11,10 @@
         <h2>تسجيل الدخول</h2>
         <form id="loginForm">
             <div class="input-group">
+                <label for="email">البريد الإلكتروني</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="input-group">
                 <label for="password">كلمة المرور</label>
                 <input type="password" id="password" required>
             </div>
@@ -19,7 +23,7 @@
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth-compat.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
