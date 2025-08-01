@@ -14,10 +14,49 @@
 
     <main>
         <section id="inventory-section">
-            <h2>إدارة المخزون</h2>
-            <p>يتم التحميل...</p>
+            <h3>إضافة منتج جديد</h3>
+            <form id="addProductForm">
+                <input type="text" id="productName" placeholder="اسم المنتج" required>
+                <input type="number" id="productQuantity" placeholder="الكمية" required>
+                <input type="number" id="productPrice" placeholder="السعر" step="0.01" required>
+                <input type="text" id="productBarcode" placeholder="الباركود (اختياري)">
+                <button type="submit">إضافة للمخزون</button>
+            </form>
+            <hr>
+            <h3>المنتجات في المخزون</h3>
+            <table id="productsTable">
+                <thead>
+                    <tr>
+                        <th>اسم المنتج</th>
+                        <th>الكمية</th>
+                        <th>السعر</th>
+                        <th>الباركود</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody">
+                    </tbody>
+            </table>
         </section>
     </main>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>تعديل المنتج</h2>
+            <form id="editProductForm">
+                <label for="editProductName">اسم المنتج:</label>
+                <input type="text" id="editProductName" required>
+                <label for="editProductQuantity">الكمية:</label>
+                <input type="number" id="editProductQuantity" required>
+                <label for="editProductPrice">السعر:</label>
+                <input type="number" id="editProductPrice" step="0.01" required>
+                <label for="editProductBarcode">الباركود:</label>
+                <input type="text" id="editProductBarcode">
+                <button type="submit">حفظ التعديلات</button>
+            </form>
+        </div>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth-compat.js"></script>
